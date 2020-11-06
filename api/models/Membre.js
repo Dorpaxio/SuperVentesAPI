@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const membreSchema = new mongoose.Schema({
     nom: {type: String, required: true},
@@ -6,5 +7,27 @@ const membreSchema = new mongoose.Schema({
     email: {type: String, required: true},
     password: {type: String, required: true, select: false}
 });
+
+membreSchema.pre('save', function (next) {
+    if(!this.isModified('password')) return next();
+
+    bcrypt.genSalt(10, (err, salt) => {
+        if(err) return next(err);
+
+        bcrypt.hash(this.password, salt, (error, hash) => {
+            if(err) return next(err);
+
+            this.password = hash;
+            next();
+        });
+    });
+});
+
+membreSchema.methods.comparePassword = function(candidatePassword, cb) {
+    bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+        if (err) return cb(err);
+        cb(null, isMatch);
+    });
+};
 
 module.exports = mongoose.model('Membres', membreSchema);
