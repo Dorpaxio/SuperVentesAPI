@@ -1,0 +1,15 @@
+{
+  "name": "superventesapi",
+  "version": "1.0.0",
+  "description": "API de l'app SuperVentes dans le cadre du cours HMIN102",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Charles DESGENETEZ (Dorpaxio)",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "helmet": "^4.2.0"
+  }
+}
