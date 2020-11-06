@@ -1,7 +1,7 @@
 const Membre = require('../models/Membre');
 const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
-const config = require('../../../config');
+const config = require('../../config');
 const fs = require('fs');
 
 const RSA_PRIVATE_KEY = fs.readFileSync(config.rsa_path);
@@ -41,12 +41,12 @@ exports.getMembres = function (req, res) {
 
 exports.connexion = function (req, res) {
     let {email, password} = req.body;
-    email = email.trim();
     if (!(email && password)) return res.status(400).json({
         ok: false,
         code: 'ME40001',
         message: 'Veuillez renseigner un email et un password.'
     });
+    email = email.trim();
 
     Membre.findOne({email: email}, '+password', function (err, membre) {
         if (err) return res.status(500).send(err);
@@ -125,7 +125,7 @@ exports.createCompte = function (req, res) {
 
         newMembre.save(function (err, membre) {
             if(err) return res.status(500).send(err);
-            const {password, ...noPassUser} = membre;
+            const {password, ...noPassUser} = membre._doc;
             return res.status(200).json({
                 ok: true,
                 token: createToken(membre._id),
