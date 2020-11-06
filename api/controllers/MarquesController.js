@@ -6,3 +6,7 @@ exports.getMarques = function (req, res) {
         return res.status(200).json(marques);
     });
 }
+
+exports.createMarque = function (req, res) {
+    
+}
