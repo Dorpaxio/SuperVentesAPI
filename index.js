@@ -5,6 +5,7 @@ const fs = require('fs');
 const helmet = require('helmet');
 const config = require('./config');
 const routes = require('./api/routes');
+const mongoose = require('mongoose');
 
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -18,6 +19,11 @@ app.use(express.json());
 app.set('json spaces', 4);
 
 app.use('/v1', routes);
+
+mongoose.connect('mongodb://localhost/superventes', {useNewUrlParser: true, useUnifiedTopology: true}, function (error) {
+    if (error) throw error;
+    console.log('Connexion à MongoDB réussie.');
+});
 
 if (process.env.PRODUCTION) {
     const {domain} = config;
