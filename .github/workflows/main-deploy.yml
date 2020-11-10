@@ -1,51 +1,23 @@
-name: Node Github CI
-
+name: Deploy application
+ 
 on:
   push:
     branches: [ main ]
-
+ 
 jobs:
-  test:
-
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [10.x, 12.x]
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name : ssh-keygen
-      run: |
-        ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
-        openssl rsa -in jwtRS256.key -pubout -outform PEM -out jwtRS256.key.pub
-        mkdir private
-        cp jwtRS256.key private/
-        cp jwtRS256.key.pub private/
-    - name: npm install and test
-      run: |
-        npm install
-        npm test
-      env:
-        CI: true
-
   deploy:
-    needs: [test]
     runs-on: ubuntu-latest
-
     steps:
-    - name: SSH and deploy node app
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        password: ${{ secrets.SSH_PASSWORD }}
-        script: |
-          cd ~/SuperVentesAPI
-          git pull origin master
-          npm install --production
-          pm2 restart index.js
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Deploy NodeJS app
+        uses: appleboy/ssh-action@v0.1.2
+        with:
+          host: ${{secrets.SSH_HOST}}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd ~/SuperVentesAPI/
+            git pull
+            npm install
+            pm2 restart index.js
