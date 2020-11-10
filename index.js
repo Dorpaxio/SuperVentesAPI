@@ -43,3 +43,5 @@ if (process.env.PRODUCTION) {
     });
 }
 
+module.exports = app;
+

@@ -4,7 +4,7 @@
   "description": "API de l'app SuperVentes dans le cadre du cours HMIN102",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx mocha ./test/* --exit"
   },
   "author": "Charles DESGENETEZ (Dorpaxio)",
   "license": "ISC",
@@ -14,6 +14,7 @@
     "express-jwt": "^6.0.0",
     "helmet": "^4.2.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.10.12"
+    "mongoose": "^5.10.12",
+    "supertest": "^6.0.1"
   }
 }
