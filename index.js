@@ -18,7 +18,7 @@ app.use(helmet());
 app.use(express.json());
 app.set('json spaces', 4);
 
-app.use('/v2', routes);
+app.use('/v1', routes);
 
 mongoose.connect(`mongodb://localhost/${config.db}`, {
     useNewUrlParser: true,
