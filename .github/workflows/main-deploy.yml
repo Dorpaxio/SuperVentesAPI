@@ -19,6 +19,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name : ssh-keygen
+      run: |
+        ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
+        openssl rsa -in jwtRS256.key -pubout -outform PEM -out jwtRS256.key.pub
+        cp jwtRS256.key private/
+        cp jwtRS256.key.pub private/
     - name: npm install and test
       run: |
         npm install
