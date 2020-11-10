@@ -38,11 +38,11 @@ if (process.env.PRODUCTION) {
         cert: certificate,
         ca: ca
     }, app).listen(config.port, function () {
-        console.log(`Serveur ouvert en mode production sur le port ${config.port} !`);
+        console.log(`Serveur ouvert en mode production sur le port ${config.port}.`);
     });
 } else {
     app.listen(config.port, function () {
-        console.log(`Serveur ouvert en mode développement sur le port ${config.port} !`);
+        console.log(`Serveur ouvert en mode développement sur le port ${config.port}.`);
     });
 }
 
