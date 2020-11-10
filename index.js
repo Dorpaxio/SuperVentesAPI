@@ -20,7 +20,10 @@ app.set('json spaces', 4);
 
 app.use('/v2', routes);
 
-mongoose.connect('mongodb://localhost/superventes', {useNewUrlParser: true, useUnifiedTopology: true}, function (error) {
+mongoose.connect(`mongodb://localhost/${config.db}`, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}, function (error) {
     if (error) throw error;
     console.log('Connexion à MongoDB réussie.');
 });
