@@ -36,6 +36,7 @@ Il y a plusieurs variables d'environnement à paramétrer.
 ```bash
 export SUPERVENTES_DOMAIN=<nom de domaine de l'env de production>
 export SUPERVENTES_PORT=<le port d'exécution (défaut 1311)>
+export SUPERVENTES_DB=superventes
 ```
 #### Exécution
 ```bash
