@@ -18,7 +18,7 @@ app.use(helmet());
 app.use(express.json());
 app.set('json spaces', 4);
 
-app.use('/vcaca', routes);
+app.use('/v1', routes);
 
 mongoose.connect('mongodb://localhost/superventes', {useNewUrlParser: true, useUnifiedTopology: true}, function (error) {
     if (error) throw error;
