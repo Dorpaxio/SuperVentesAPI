@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
 const config = require('../../config');
 const fs = require('fs');
+const Produit = require('../models/Produit');
 
 const RSA_PRIVATE_KEY = fs.readFileSync(config.rsa_path);
 const RSA_PUBLIC_KEY = fs.readFileSync(config.rsa_pub_path);
@@ -15,17 +16,17 @@ const createToken = exports.createToken = function (userId) {
     });
 }
 
-const checkToken = exports.checkToken = function (req, res, next) {
+exports.checkToken = function (req, res, next) {
     return expressJwt({secret: RSA_PUBLIC_KEY, algorithms: ['RS256']})(req, res, function (error) {
         if (error) return res.status(error.status).send(error);
-        Membre.findOne({_id: req.user.sub}, function (err, user) {
+        Membre.findOne({_id: req.user.sub}, function (err, auth) {
             if (err) return res.status(500).send(err);
-            if (!user) return res.status(404).json({
+            if (!auth) return res.status(404).json({
                 ok: false,
                 message: 'Le token est bon mais impossible de trouver le membre.'
             });
 
-            req.user = user;
+            req.auth = auth;
 
             return next();
         });
@@ -107,8 +108,8 @@ exports.createCompte = function (req, res) {
     }
 
     Membre.findOne({email}, function (err, membre) {
-        if(err) return res.status(500).send(err);
-        if(membre) {
+        if (err) return res.status(500).send(err);
+        if (membre) {
             return res.status(400).json({
                 ok: false,
                 code: 'ME40006',
@@ -124,7 +125,7 @@ exports.createCompte = function (req, res) {
         });
 
         newMembre.save(function (err, membre) {
-            if(err) return res.status(500).send(err);
+            if (err) return res.status(500).send(err);
             const {password, ...noPassUser} = membre._doc;
             return res.status(200).json({
                 ok: true,
@@ -133,5 +134,92 @@ exports.createCompte = function (req, res) {
                 user: noPassUser
             });
         });
+    });
+}
+
+exports.checkMembre = function (req, res, next, membreId) {
+    Membre.findOne({_id: membreId}, function (err, membre) {
+        if (err) return res.status(membre);
+        if (!membre) return res.status(404).json({
+            ok: false,
+            code: 'ME40403',
+            message: 'Aucun ucun membre associé a cet identifiant.'
+        });
+
+        req.membre = membre;
+
+        return next();
+    });
+}
+
+exports.getMembre = function (req, res) {
+    return res.status(200).send(req.membre);
+}
+
+exports.getPanier = function (req, res) {
+    // Verifier si admin quand implémenté
+    Membre.findOne({_id: req.membre._id})
+        .select('panier')
+        .populate('panier.produit')
+        .exec(function (err, membre) {
+            if (err) return res.status(500).send(err);
+            return res.status(200).json(membre.panier || []);
+        });
+}
+
+exports.updatePanier = function (req, res) {
+    // Vérifier si admin quand implémenté
+    const {produitId} = req.body;
+    let {quantity} = req.body;
+
+    if (!produitId) return res.status(400).json({
+        ok: false,
+        code: 'ME40007',
+        message: 'Merci de spécifier une produitId'
+    });
+
+    if (!quantity) quantity = 1;
+
+    Produit.findOne({_id: produitId}, function (err, produit) {
+            if (err) return res.status(500).send(err);
+            if (!produit) return res.status(404).json({ok: false, message: `Le produit indiqué n'existe pas.`});
+
+            const panier = req.membre._doc.panier || [];
+            const existingProduit = panier.filter(p => p.produit == produitId)[0];
+            const existingProduitQuantity = existingProduit ? existingProduit.quantity : 0;
+
+            const newQuantity = existingProduitQuantity + quantity;
+
+            let query;
+            if (existingProduit) {
+                let modif;
+                if (newQuantity > 0) modif = {$set: {'panier.produit.$': {produit: produitId, quantity: newQuantity}}};
+                else modif = {$unset: {'panier.produit.$': 1}};
+
+                query = Membre.updateOne({
+                    _id: req.membre._id,
+                    'panier.produit': produitId
+                }, modif);
+            } else {
+                query = Membre.updateOne({
+                    _id: req.membre._id,
+                }, {$push: {'panier': {produit: produitId, quantity: newQuantity}}});
+            }
+            console.log(query);
+            query.exec(function (err, update) {
+                console.log(err);
+                if (err) return res.status(500).send(err);
+                if (update.nModified === 0) return res.status(304).send();
+                return res.status(204).send();
+            });
+        }
+    );
+}
+
+exports.deletePanier = function (req, res) {
+    Membre.updateOne({_id: req.membre._id}, {$set: {panier: []}}, function (err, update) {
+        if(err) return res.status(500).send(err);
+        if(update.nModified === 0) return res.status(304).send();
+        return res.status(204).send();
     });
 }
