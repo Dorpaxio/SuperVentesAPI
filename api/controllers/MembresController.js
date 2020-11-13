@@ -193,8 +193,8 @@ exports.updatePanier = function (req, res) {
             let query;
             if (existingProduit) {
                 let modif;
-                if (newQuantity > 0) modif = {$set: {'panier.produit.$': {produit: produitId, quantity: newQuantity}}};
-                else modif = {$unset: {'panier.produit.$': 1}};
+                if (newQuantity > 0) modif = {$set: {'panier.$': {produit: produitId, quantity: newQuantity}}};
+                else modif = {$unset: {'panier.$': 1}};
 
                 query = Membre.updateOne({
                     _id: req.membre._id,
@@ -205,9 +205,7 @@ exports.updatePanier = function (req, res) {
                     _id: req.membre._id,
                 }, {$push: {'panier': {produit: produitId, quantity: newQuantity}}});
             }
-            console.log(query);
             query.exec(function (err, update) {
-                console.log(err);
                 if (err) return res.status(500).send(err);
                 if (update.nModified === 0) return res.status(304).send();
                 return res.status(204).send();

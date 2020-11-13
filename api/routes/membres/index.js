@@ -17,6 +17,7 @@ router.route('/:membreId')
 
 router.route('/:membreId/panier')
     .get(membresController.getPanier)
-    .post(membresController.updatePanier);
+    .post(membresController.updatePanier)
+    .delete(membresController.deletePanier);
 
 module.exports = router;
