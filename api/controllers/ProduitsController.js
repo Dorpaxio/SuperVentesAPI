@@ -16,9 +16,9 @@ exports.getProduits = function (req, res) {
 }
 
 exports.getCategories = function (req, res) {
-    Produit.find({}, "categorie", function (err, produits) {
+    Produit.distinct('categorie', function (err, produits) {
         if (err) return res.status(500).send(err);
-        return res.status(200).json(produits.map(p => p.categorie));
+        return res.status(200).json(produits);
     })
 }
 
