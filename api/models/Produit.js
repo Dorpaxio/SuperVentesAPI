@@ -7,4 +7,15 @@ const produitSchema = new mongoose.Schema({
     description: {type: String, required: true}
 });
 
+produitSchema.index({'$**': 'text'},
+    {
+        weights: {
+            'nom': 10,
+            'categorie': 5,
+            'prix': 3,
+            'description': 1,
+        }
+    }
+);
+
 module.exports = mongoose.model('Produits', produitSchema);
