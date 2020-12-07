@@ -1,9 +1,10 @@
 const router = require('express').Router();
 const produitsController = require('../../controllers/ProduitsController');
+const membresController = require('../../controllers/MembresController');
 
 router.route("")
     .get(produitsController.getProduits)
-    .post(produitsController.addProduit);
+    .post(membresController.checkToken, produitsController.addProduit);
 
 router.route("/categories")
     .get(produitsController.getCategories);

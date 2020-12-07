@@ -18,12 +18,13 @@ const createToken = exports.createToken = function (userId) {
 
 exports.checkToken = function (req, res, next) {
     return expressJwt({secret: RSA_PUBLIC_KEY, algorithms: ['RS256']})(req, res, function (error) {
-        if (error) return res.status(error.status).send(error);
+        if (error) return res.status(error.status).json({...error, auth: false});
         Membre.findOne({_id: req.user.sub}, function (err, auth) {
             if (err) return res.status(500).send(err);
             if (!auth) return res.status(404).json({
                 ok: false,
-                message: 'Le token est bon mais impossible de trouver le membre.'
+                message: 'Le token est bon mais impossible de trouver le membre.',
+                auth: false
             });
 
             req.auth = auth;
@@ -157,7 +158,6 @@ exports.getMembre = function (req, res) {
 }
 
 exports.getPanier = function (req, res) {
-    // Verifier si admin quand implémenté
     Membre.findOne({_id: req.membre._id})
         .select('panier')
         .populate('panier.produit')
@@ -168,7 +168,6 @@ exports.getPanier = function (req, res) {
 }
 
 exports.updatePanier = function (req, res) {
-    // Vérifier si admin quand implémenté
     const {produitId} = req.body;
     let {quantity} = req.body;
 

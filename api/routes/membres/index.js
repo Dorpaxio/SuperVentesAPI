@@ -16,6 +16,7 @@ router.route('/:membreId')
     .get(membresController.getMembre);
 
 router.route('/:membreId/panier')
+    .all(membresController.checkToken)
     .get(membresController.getPanier)
     .post(membresController.updatePanier)
     .delete(membresController.deletePanier);
