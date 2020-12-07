@@ -22,7 +22,8 @@ app.use('/v1', routes);
 
 mongoose.connect(`mongodb://localhost/${config.db}`, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useCreateIndex: true,
 }, function (error) {
     if (error) throw error;
     console.log('Connexion à MongoDB réussie.');
