@@ -31,6 +31,16 @@ node index.js
 
 ### Exécution en production
 Nécessite le package npm PM2.
+
+#### Générer les certificats pour les jsonwebtoken
+Créez un dossier private dans la racine et rentrez dedans.
+Il faut ensuite générer les certificats.
+```
+mkdir private
+cd private
+ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
+openssl rsa -in jwtRS256.key -pubout -outform PEM -out jwtRS256.key.pub
+```
 #### Variables d'environnement
 Il y a plusieurs variables d'environnement à paramétrer.
 ```bash
