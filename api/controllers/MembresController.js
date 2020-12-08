@@ -17,6 +17,8 @@ const createToken = exports.createToken = function (userId) {
 }
 
 exports.checkToken = function (req, res, next) {
+    console.log(req.body)
+    console.log(req.headers)
     return expressJwt({secret: RSA_PUBLIC_KEY, algorithms: ['RS256']})(req, res, function (error) {
         if (error) return res.status(error.status).json({...error, auth: false});
         Membre.findOne({_id: req.user.sub}, function (err, auth) {
