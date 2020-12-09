@@ -20,4 +20,4 @@ jobs:
             cd ~/SuperVentesAPI/
             git pull
             npm install
-            pm2 restart index.js
+            pm2 restart SuperVentesAPI
