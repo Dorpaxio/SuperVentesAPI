@@ -193,7 +193,7 @@ exports.updatePanier = function (req, res) {
             if (existingProduit) {
                 let modif;
                 if (newQuantity > 0) modif = {$set: {'panier.$': {produit: produitId, quantity: newQuantity}}};
-                else modif = {$unset: {'panier.$': 1}};
+                else modif = {$pull: {'panier': {produit: produitId}}};
 
                 query = Membre.updateOne({
                     _id: req.membre._id,
